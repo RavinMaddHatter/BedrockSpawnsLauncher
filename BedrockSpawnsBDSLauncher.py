@@ -123,8 +123,11 @@ class appLauncher:
         self.bdsRunning=True
     def serverOut(self):
         for line in iter(self.server.stdout.readline, b''):
-            self.stdoutQueue.put(line)
-            print('got line: {0}'.format(line), end='')
+            try:
+                self.stdoutQueue.put(line)
+                print('got line: {0}'.format(line), end='')
+            except:
+                pass
             if not self.controlQueue.empty():
                 val=self.controlQueue.get()
                 if val=="stopPrint":
@@ -157,7 +160,10 @@ class appLauncher:
         if cmd.lower() in ["h","help","-h"]:
             print("this is a psuedo shell for the bds server, to stop BDS cleanly send stop, otherwise non help commands are passed to BDS")
         elif cmd.lower() == "stop":
-            self.sendCommand("stop")
+            try:
+                self.sendCommand("stop")
+            except:
+                pass
             stop=True
             print("stoping")
         else:
@@ -165,7 +171,10 @@ class appLauncher:
         if stop:
             self.controlQueue.put("stopPrint")
             sleep(1)
-            self.stopServer()
+            try:
+                self.stopServer()
+            except:
+                pass
             self.controlQueue.put("stop")
         else:
             self.startShell()
@@ -174,6 +183,8 @@ class appLauncher:
 if __name__ == "__main__":
     parser = ArgumentParser(description='Bedrock Spawns Server Launcher. A program designed to wrap BDS and allow the Bedrock spawns twitch extension to inject commands into your server.')
     parser.add_argument('-l', '--launch', action='store', default=False, help="Launch the server and all monitoring")
+    parser.add_argument('-m', '--monitor', action='store', default=False, help="A method for monitoring and processing commands without BDS. This is nice for testing")
+
     parser.add_argument('-p', '--bdsPath', action='store', default="", help="Set the path for the BDS binary")
     parser.add_argument('-s', '--setupToken', action='store', default='', help="configure Bedrock Spawns Server using a setup token from bedrock spawns")
     parser.add_argument('-a', '--addUser', action='store', default='', help="add a user based upon the imput string")
@@ -197,6 +208,9 @@ if __name__ == "__main__":
     if len(args.bdsPath)>0:
         server.setBDSTarget(args.bdsPath)
         server.save()
+    if args.monitor:
+        server.connect()
+        server.startShell()
     if args.launch:
         server.startServer()
         server.connect()
