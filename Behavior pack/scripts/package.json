@@ -1,0 +1,15 @@
+{
+  "name": "bedrockspawns",
+  "version": "1.0.0",
+  "description": "a tool for integrating minecraft bedrock edition with twitch",
+  "main": "test.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "esbuild": "^0.14.54",
+    "jwt-encode": "^1.0.1"
+  }
+}
